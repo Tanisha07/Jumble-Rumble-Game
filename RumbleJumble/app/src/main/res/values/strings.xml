@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Jumble Rumble</string>
+
+    <string name="start">Start</string>
+    <string name="time">Time :</string>
+    <string name="textview">TextView</string>
+    <string name="clear">Clear</string>
+    <string name="jumble_rumble">Jumble Rumble</string>
+</resources>
+
+
