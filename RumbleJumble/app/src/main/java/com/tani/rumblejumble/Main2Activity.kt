@@ -1,12 +1,74 @@
 package com.tani.rumblejumble
 
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import kotlinx.android.synthetic.main.activity_main2.*
 
 class Main2Activity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
+
+        //setting the bg color of alphabet tiles to gray
+
+        t1.setBackgroundColor(blue)
+        t2.setBackgroundColor(blue)
+        t3.setBackgroundColor(blue)
+        t4.setBackgroundColor(blue)
+        t5.setBackgroundColor(blue)
+        t6.setBackgroundColor(blue)
+
+        //setting the text color of alphabet tiles white
+        t1.setTextColor(white)
+        t2.setTextColor(white)
+        t3.setTextColor(white)
+        t4.setTextColor(white)
+        t5.setTextColor(white)
+        t6.setTextColor(white)
+
+
+
     }
+    //converting the string color hex codes to int, so that it can be set in bg
+    val blue:Int = Color.parseColor("#1a556d")
+    val darkBlue :Int = Color.parseColor("#154457")
+    val white : Int = Color.WHITE
+
+    //creating the onClick functions of the alphabet textViews (line 31-60)
+    fun c1(view: View){
+        t1.setBackgroundColor(darkBlue)
+        txt_Answer.append(t1.text.toString())
+        t1.isEnabled = false
+    }
+    fun c2(view: View){
+        t2.setBackgroundColor(darkBlue)
+        txt_Answer.append(t2.text.toString())
+        t2.isEnabled = false
+    }
+    fun c3(view: View){
+        t3.setBackgroundColor(darkBlue)
+        txt_Answer.append(t3.text.toString())
+        t3.isEnabled = false
+    }
+    fun c4(view: View){
+        t4.setBackgroundColor(darkBlue)
+        txt_Answer.append(t4.text.toString())
+        t4.isEnabled = false
+    }
+    fun c5(view: View){
+        t5.setBackgroundColor(darkBlue)
+        txt_Answer.append(t5.text.toString())
+        t5.isEnabled = false
+    }
+    fun c6(view: View){
+        t6.setBackgroundColor(darkBlue)
+        txt_Answer.append(t6.text.toString())
+        t6.isEnabled = false
+    }
+
+
+    
 }

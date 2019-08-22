@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         Globals.ch=3
     }
     fun start (view: View){
-        val intents = Intent(applicationContext, start::class.java)
+        val intents = Intent(applicationContext, Main2Activity::class.java)
         startActivity(intents)
     }
 }
