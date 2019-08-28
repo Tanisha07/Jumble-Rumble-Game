@@ -9,6 +9,10 @@ import android.os.CountDownTimer
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main2.*
+import java.lang.Compiler.enable
+import java.nio.file.Files.delete
+import java.util.*
+import kotlin.concurrent.schedule
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -29,14 +33,13 @@ class Main2Activity : AppCompatActivity() {
         countDownTimer = object : CountDownTimer(45000, 1000){
             override fun onTick(p0: Long) {
                 val time=p0/1000
-                txt_Time.text="Time : $time"
-
-
+                txt_Time.text="Time : $time" //to display time left. it is updated every sec
 
             }
 
             override fun onFinish() {
                 val toast = Toast.makeText(applicationContext, "Times up", Toast.LENGTH_LONG).show()
+                Globals.S_No =1
                 val intent= Intent(applicationContext, MainActivity::class.java)
                 startActivity(intent)
             }
@@ -44,31 +47,23 @@ class Main2Activity : AppCompatActivity() {
 
 
 
-        }.start()
+        }
 
-        //database to store jumbled words
-        try{
+        //calling this function to retrieve and display words from table
+        setTextFromTable()
+
+        /* database n table creation queries
+
             val pracDB = this.openOrCreateDatabase("words1", Context.MODE_PRIVATE,null)
-            pracDB.execSQL("create table if not exists Jwords(number int(2), word varchar,hint varchar)")
-            pracDB.execSQL("insert into Jwords values ( 1, 'TRAGIC', 'adj. Causing or characterized by extreme distress or sorrow.')")
-            pracDB.execSQL("insert into Jwords values (2, 'UNIQUE', 'adj. One of its kind')")
+            pracDB.execSQL("create table if not exists Jwords(number int(2), word varchar, hint varchar)")
+           // pracDB.execSQL("insert into Jwords values ( 1, 'TRAGIC', 'adj. Causing or characterized by extreme distress or sorrow.')")
+           // pracDB.execSQL("insert into Jwords values (2, 'UNIQUE', 'adj. One of its kind')")
+           // pracDB.execSQL("delete from Jwords")
+           // var cursor = pracDB.rawQuery("Select * from Jwords", null)
 
-            var cursor = pracDB.rawQuery("Select * from Jwords", null)
-            val no_Index = cursor.getColumnIndex("number")
-            val word_Index = cursor.getColumnIndex("word")
-            val hint_Index = cursor.getColumnIndex("hint")
-           // txt_Hint.text = cursor.getString(hint_Index)
-            val word = cursor.getString(word_Index)
-            val jumbledWord = jumble(word)
+        } */
 
 
-
-        }
-        catch (e:Exception){
-            e.printStackTrace()
-        }
-
-        //txt_Hint.text=jumble("TRAGIC")
     }
     //converting the string color hex codes to int, so that it can be set in text or bg of the tiles
     val blue:Int = Color.parseColor("#1a556d")
@@ -118,18 +113,39 @@ class Main2Activity : AppCompatActivity() {
     fun clear(view: View){
         setBlue()
         setTextWhite()
-        t1.isEnabled = true
-        t2.isEnabled = true
-        t3.isEnabled = true
-        t4.isEnabled = true
-        t5.isEnabled = true
-        t6.isEnabled = true
-        txt_Answer.text =""
+        enable()
     }
 
     //onClick function for the check button- to check our ans
     fun check(view: View){
+        try{
+            val pracDB = this.openOrCreateDatabase("words1", Context.MODE_PRIVATE,null)
+            val num = Globals.S_No     //global var to keep check of serial no of database rows
+            var cursor = pracDB.rawQuery("select * from Jwords where number = $num", null)
+            var word_index = cursor.getColumnIndex("word")
+            cursor.moveToFirst()
+            var word = cursor.getString(word_index) //getting the word from table
+            if (word == txt_Answer.text.toString()){
+                var toast = Toast.makeText(applicationContext,"Correct", Toast.LENGTH_LONG).show()
+                Globals.inc()  //to increase global var S_No, so that next time next row is accessed
+                countDownTimer!!.cancel()   //canceling the current times
 
+                //Timer().schedule(1000) {} - for 1 sec delay
+
+                //calling this function to retrieve and display words from table
+                setTextFromTable()
+            }
+            else{
+                var toast = Toast.makeText(applicationContext,"Incorrect Answer", Toast.LENGTH_LONG).show()
+                setBlue()       //these 3 methods r to restore default conditions
+                setTextWhite()
+                enable()
+            }
+
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     //fun to set alphabet tiles (light) blue, ie, the initial color
@@ -157,16 +173,17 @@ class Main2Activity : AppCompatActivity() {
     : String {
         val s: String = string
         var len = s.length
-        val strArr :CharArray = CharArray(s.length) //output array which will contain the jumbled word
+        var strArr  = CharArray(len) //output array which will contain the jumbled word
         var arr = s.toCharArray() //input arr from string input
-        for (n in 0 until s.length-1) {
-           // val i: Int = Random.nextInt().absoluteValue % len //generating a random integer b/w 0 n current length of arr
-            var i = (0..len).random()
+        for (n in 0 until s.length) {
+           // val i: Int = Random.nextInt().absoluteValue % len
+            var i = (0 until  len).random() //generating a random integer b/w 0 n current length of arr
             strArr[n]=arr[i]        //nth value of final arr given random val of input string arr
             arr = delete(arr, i)    //deleting the particular index val, so that it doesn't appear again
             len--                   // decreasing the length of the arr, since, we removed an element
         }
-        return strArr.toString()
+        var str = String(strArr)
+        return str
     }
 
     //this is a fun created to delete a given index s an array by shifting all elements left
@@ -181,5 +198,63 @@ class Main2Activity : AppCompatActivity() {
         return ch
     }
 
-    
+    fun enable(){
+        t1.isEnabled = true
+        t2.isEnabled = true
+        t3.isEnabled = true
+        t4.isEnabled = true
+        t5.isEnabled = true
+        t6.isEnabled = true
+        txt_Answer.text =""
+    }
+
+    //fun to get the word in table corresponding to a particular row no., jumbling it, and
+    //displaying its letters on each alphabet tile
+    fun setTextFromTable(){
+        try{
+            val pracDB = this.openOrCreateDatabase("words1", Context.MODE_PRIVATE,null)
+            pracDB.execSQL("create table if not exists Jwords(number int(2), word varchar, hint varchar)")
+            // pracDB.execSQL("insert into Jwords values ( 1, 'TRAGIC', 'adj. Causing or characterized by extreme distress or sorrow.')")
+            // pracDB.execSQL("insert into Jwords values (2, 'UNIQUE', 'adj. One of its kind')")
+            // pracDB.execSQL("delete from Jwords")
+            // var cursor = pracDB.rawQuery("Select * from Jwords", null)
+            val num = Globals.S_No
+            var cursor = pracDB.rawQuery("Select * from Jwords where number = $num" +
+                    "", null)   //getting all column values for a particular S_No
+            val no_Index = cursor.getColumnIndex("number")
+            val word_Index = cursor.getColumnIndex("word")
+            val hint_Index = cursor.getColumnIndex("hint")
+
+            cursor.moveToFirst()       //moving the cursor to the first value of the result
+            txt_Hint.text = cursor.getString(hint_Index)    //setting text from hint column to hint textView
+            val word = cursor.getString(word_Index)     //retrieving the word
+            val jumbledWord = jumble(word)      //calling jumble() to jumble the word
+
+            //letting individual char of the word to diff textViews
+            t1.text= jumbledWord.get(0).toString()
+            t2.text= jumbledWord.get(1).toString()
+            t3.text= jumbledWord.get(2).toString()
+            t4.text= jumbledWord.get(3).toString()
+            t5.text= jumbledWord.get(4).toString()
+            t6.text= jumbledWord.get(5).toString()
+        }
+        catch (e:Exception){
+            e.printStackTrace()
+        }
+
+        setTextWhite()  //restoring the default values of the alphabet tiles
+        setBlue()
+        enable()
+        countDownTimer!!.start()    //starting the timer again from the beginning
+    }
+
+   /*fun shuffle(s : String):  String{
+        var shuffle = s.toCharArray()
+        var s : String
+         Collections.shuffle(Arrays.asList(shuffle))
+        //for (i in shuffle){}
+        val str = String(shuffle)
+        return str
+    }*/
+
 }

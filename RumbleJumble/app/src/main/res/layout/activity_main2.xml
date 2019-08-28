@@ -85,7 +85,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/t4" android:onClick="c4" app:layout_constraintEnd_toStartOf="@+id/t5"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintTop_toBottomOf="@+id/txt_Answer" android:layout_marginTop="56dp"
             android:textSize="30sp" android:gravity="center"/>
     <TextView
