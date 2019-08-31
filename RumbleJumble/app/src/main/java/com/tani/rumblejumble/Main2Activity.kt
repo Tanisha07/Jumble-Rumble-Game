@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main2.*
@@ -19,9 +20,17 @@ import kotlin.random.Random
 class Main2Activity : AppCompatActivity() {
 
     var countDownTimer:CountDownTimer? = null
+    var score  = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
+
+        //setting the value of the global var to 3 to keep check of chances for this game
+        Globals.ch = 3
+        var ch =Globals.ch
+        txt_ChancesLeft.text ="Chances : $ch"
+        txt_Score.text="Score : 0"
 
         //setting the bg color of alphabet tiles to light blue
         setBlue()
@@ -48,6 +57,17 @@ class Main2Activity : AppCompatActivity() {
 
 
         }
+        //setting the color of rest of the textViews
+        txt_Answer.setTextColor(blue)
+        txt_Score.setTextColor(blue)
+        txt_ChancesLeft.setTextColor(blue)
+        txt_Time.setTextColor(blue)
+        txt_Hint.setTextColor(color)
+        textView7.setTextColor(blue)
+        button_Check.setBackgroundColor(blue)
+        button_Check.setTextColor(white)
+        button_Clear.setTextColor(white)
+        button_Clear.setBackgroundColor(blue)
 
         //calling this function to retrieve and display words from table
         setTextFromTable()
@@ -116,6 +136,9 @@ class Main2Activity : AppCompatActivity() {
         enable()
     }
 
+    //declaring handler n runnable to get a delay before displaying the next jumbled word
+    var handler: Handler = Handler()
+
     //onClick function for the check button- to check our ans
     fun check(view: View){
         try{
@@ -129,17 +152,25 @@ class Main2Activity : AppCompatActivity() {
                 var toast = Toast.makeText(applicationContext,"Correct", Toast.LENGTH_LONG).show()
                 Globals.inc()  //to increase global var S_No, so that next time next row is accessed
                 countDownTimer!!.cancel()   //canceling the current times
+                //score = txt_Score.text.toString().toInt()
+                score+=5
+                txt_Score.text = "Score : $score"
 
-                //Timer().schedule(1000) {} - for 1 sec delay
-
-                //calling this function to retrieve and display words from table
-                setTextFromTable()
+                //using handler to cause 1 sec delay
+                handler.postDelayed({setTextFromTable()},1000)
             }
             else{
                 var toast = Toast.makeText(applicationContext,"Incorrect Answer", Toast.LENGTH_LONG).show()
                 setBlue()       //these 3 methods r to restore default conditions
                 setTextWhite()
                 enable()
+                Globals.ch--
+                txt_ChancesLeft.text = "Chances : ${Globals.ch}"
+                if (Globals.ch==0){
+                    val intent =Intent(applicationContext, MainActivity::class.java)
+                    startActivity(intent)
+                    var toast = Toast.makeText(applicationContext,"No chances left", Toast.LENGTH_LONG).show()
+                }
             }
 
         }
@@ -215,7 +246,7 @@ class Main2Activity : AppCompatActivity() {
             val pracDB = this.openOrCreateDatabase("words1", Context.MODE_PRIVATE,null)
             pracDB.execSQL("create table if not exists Jwords(number int(2), word varchar, hint varchar)")
             // pracDB.execSQL("insert into Jwords values ( 1, 'TRAGIC', 'adj. Causing or characterized by extreme distress or sorrow.')")
-            // pracDB.execSQL("insert into Jwords values (2, 'UNIQUE', 'adj. One of its kind')")
+             //pracDB.execSQL("insert into Jwords values (2, 'UNIQUE', 'adj. One of its kind')")
             // pracDB.execSQL("delete from Jwords")
             // var cursor = pracDB.rawQuery("Select * from Jwords", null)
             val num = Globals.S_No
