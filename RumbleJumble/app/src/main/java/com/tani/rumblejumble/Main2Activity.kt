@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main2.*
@@ -142,6 +143,7 @@ class Main2Activity : AppCompatActivity() {
     //onClick function for the check button- to check our ans
     fun check(view: View){
         try{
+
             val pracDB = this.openOrCreateDatabase("words1", Context.MODE_PRIVATE,null)
             val num = Globals.S_No     //global var to keep check of serial no of database rows
             var cursor = pracDB.rawQuery("select * from Jwords where number = $num", null)
@@ -278,6 +280,31 @@ class Main2Activity : AppCompatActivity() {
         enable()
         countDownTimer!!.start()    //starting the timer again from the beginning
     }
+
+    //decides what happens on pressing back button in device
+    override fun onBackPressed() {
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        val dialog: AlertDialog = builder.setTitle("Quit")
+            .setMessage("Do you want to quit this game?")
+            .setPositiveButton("Quit") {
+                    dialog, which -> val intent = Intent(applicationContext, MainActivity::class.java)
+                startActivity(intent)
+                countDownTimer!!.cancel()
+            }
+            .setNegativeButton("Cancel") { dialog, which -> dialog.dismiss()
+
+            }
+            .create()
+        dialog.show()
+
+        //setting the color of dialog buttons
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(blue)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(blue)
+
+       // super.onBackPressed()- delete this method to prevent going back using back button
+    }
+
 
    /*fun shuffle(s : String):  String{
         var shuffle = s.toCharArray()
