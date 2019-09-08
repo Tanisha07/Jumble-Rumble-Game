@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.SystemClock
 import android.support.v7.app.AlertDialog
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
@@ -48,22 +49,28 @@ class MainActivity : AppCompatActivity() {
         button.setBackgroundColor(darkBlue)
         button.setTextColor(Color.WHITE)
        // button.setTextColor(darkBlue)
-
-
     }
 
+    //var currentClickTime: Long=SystemClock.uptimeMillis()
+    //var mLastClickTime : Long=currentClickTime;
+    //var elapsedTime : Long=currentClickTime-mLastClickTime
+
+        //prevent pressing the button again within 2 seconds
     val handler = Handler()
-    fun start (view: View){
+    fun start (view : View){
 
         handler.postDelayed({val intents = Intent(applicationContext, Main2Activity::class.java)
             startActivity(intents)}, 1000)
 
     }
+
     //blue - 1a556d
     val blue:Int = Color.parseColor("#1a556d") //now white FFFFFF
     val darkBlue :Int = Color.parseColor("#154457")
     val color : Int = Color.parseColor("#2f3450")
     val white : Int = Color.parseColor("#FFFFFF") // now darkBlue 154457
+
+
 
     override fun onBackPressed() {
 
@@ -84,4 +91,5 @@ class MainActivity : AppCompatActivity() {
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(blue)
         //super.onBackPressed()
     }
+
 }

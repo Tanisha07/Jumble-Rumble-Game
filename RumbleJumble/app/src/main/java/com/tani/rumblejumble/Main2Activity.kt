@@ -7,9 +7,12 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.os.SystemClock
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.lang.Compiler.enable
 import java.nio.file.Files.delete
@@ -53,11 +56,9 @@ class Main2Activity : AppCompatActivity() {
                 val intent= Intent(applicationContext, MainActivity::class.java)
                 startActivity(intent)
             }
-
-
-
-
         }
+        countDownTimer!!.start()
+
         //setting the color of rest of the textViews
         txt_Answer.setTextColor(blue)
         txt_Score.setTextColor(blue)
@@ -73,16 +74,48 @@ class Main2Activity : AppCompatActivity() {
         //calling this function to retrieve and display words from table
         setTextFromTable()
 
-        /* database n table creation queries
+        // database n table creation queries
 
             val pracDB = this.openOrCreateDatabase("words1", Context.MODE_PRIVATE,null)
-            pracDB.execSQL("create table if not exists Jwords(number int(2), word varchar, hint varchar)")
-           // pracDB.execSQL("insert into Jwords values ( 1, 'TRAGIC', 'adj. Causing or characterized by extreme distress or sorrow.')")
-           // pracDB.execSQL("insert into Jwords values (2, 'UNIQUE', 'adj. One of its kind')")
+
            // pracDB.execSQL("delete from Jwords")
+           // pracDB.execSQL("create table if not exists Jwords(number int(2), word varchar, hint varchar)")
+        /*
+        pracDB.execSQL("insert into Jwords values (1, 'TRAGIC', 'adj. Causing or characterized by extreme distress or sorrow')")
+        pracDB.execSQL("insert into Jwords values (2, 'ORATOR', 'n. a public speaker')")
+        pracDB.execSQL("insert into Jwords values (3, 'CLEAVE', 'v. split or sever (something) ')")
+        pracDB.execSQL("insert into Jwords values (4, 'NOVICE', 'n. a person new to and inexperienced for job or situation')")
+        pracDB.execSQL("insert into Jwords values (5, 'PHOBIA', 'n. an extreme or irrational fear of or aversion to something')")
+        pracDB.execSQL("insert into Jwords values (6, 'OFFEND', 'v. to make someone upset or angry')")
+        pracDB.execSQL("insert into Jwords values (7, 'VANDAL', 'n. person who intentionally damages others property')")
+        pracDB.execSQL("insert into Jwords values (8, 'THEIST', 'n. a person who believes in the existence of gods')")
+        pracDB.execSQL("insert into Jwords values (9, 'UNIQUE', 'adj. One of a kind')")
+        pracDB.execSQL("insert into Jwords values (10, 'STURDY', 'adj. strongly and solidly built')")
+        pracDB.execSQL("insert into Jwords values (11, 'SELDOM', 'adv. rarely')")
+        pracDB.execSQL("insert into Jwords values (12, 'GARAGE', 'n. a building for housing a motor vehicle or vehicles')")
+        pracDB.execSQL("insert into Jwords values (13, 'PARDON', 'v. forgive or excuse')")
+        pracDB.execSQL("insert into Jwords values (14, 'CLUMSY', 'adj. awkward in movement or in handling things')")
+        pracDB.execSQL("insert into Jwords values (15, 'PONDER', 'v. think about (something) carefully')")
+        pracDB.execSQL("insert into Jwords values (16, 'UTOPIA', 'n. an imagined state of things where everything is perfect')")
+        pracDB.execSQL("insert into Jwords values (17, 'REBUKE', 'v. express sharp disapproval or criticism of (someone)')")
+        pracDB.execSQL("insert into Jwords values (18, 'GLOOMY', 'adj. dark or poorly lit, and appears depressing or frightening ')")
+        pracDB.execSQL("insert into Jwords values (19, 'ASCEND', 'v. go up or climb')")
+        pracDB.execSQL("insert into Jwords values (20, 'PROFIT', 'n. a financial gain')")
+        pracDB.execSQL("insert into Jwords values (21, 'PLENTY', 'pron. a large or sufficient amount or quantity')")
+        pracDB.execSQL("insert into Jwords values (22, 'SOMBRE', 'adj. conveying a feeling of deep seriousness and sadness ')")
+        pracDB.execSQL("insert into Jwords values (23, 'HARDLY', 'adv. scarcely ')")
+        pracDB.execSQL("insert into Jwords values (24, 'FORBID', 'v. refuse to allow')")
+        pracDB.execSQL("insert into Jwords values (25, 'HATRED', 'n. intense dislike')")
+        pracDB.execSQL("insert into Jwords values (26, 'WIZARD', 'n. a man who has magical powers ')")
+        pracDB.execSQL("insert into Jwords values (27, 'MAROON', 'adj. a color')")
+        pracDB.execSQL("insert into Jwords values (28, 'REGRET', 'v. feel sad, repentant, or disappointed over something')")
+        pracDB.execSQL("insert into Jwords values (29, 'ALMOST', 'adv. not quite; very nearly')")
+        pracDB.execSQL("insert into Jwords values (30, 'THRONE', 'n. the special chair used by a ruler ')")
+        */
+
            // var cursor = pracDB.rawQuery("Select * from Jwords", null)
 
-        } */
+
 
 
     }
@@ -141,6 +174,7 @@ class Main2Activity : AppCompatActivity() {
     var handler: Handler = Handler()
 
     //onClick function for the check button- to check our ans
+
     fun check(view: View){
         try{
 
@@ -151,7 +185,7 @@ class Main2Activity : AppCompatActivity() {
             cursor.moveToFirst()
             var word = cursor.getString(word_index) //getting the word from table
             if (word == txt_Answer.text.toString()){
-                var toast = Toast.makeText(applicationContext,"Correct", Toast.LENGTH_LONG).show()
+                var toast = Toast.makeText(applicationContext,"Correct answer", Toast.LENGTH_LONG).show()
                 Globals.inc()  //to increase global var S_No, so that next time next row is accessed
                 countDownTimer!!.cancel()   //canceling the current times
                 //score = txt_Score.text.toString().toInt()
@@ -252,6 +286,31 @@ class Main2Activity : AppCompatActivity() {
             // pracDB.execSQL("delete from Jwords")
             // var cursor = pracDB.rawQuery("Select * from Jwords", null)
             val num = Globals.S_No
+
+            if (Globals.S_No == 31){
+                Globals.S_No = 1
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                val dialog: AlertDialog = builder.setTitle("Jumble Rumble")
+                    .setMessage("Congratulations! You have completed the game. Would you like to play again?")
+                    .setNegativeButton("Quit") {
+                            dialog, which -> countDownTimer!!.cancel()
+                        val intent = Intent(applicationContext, MainActivity::class.java)
+                        startActivity(intent)
+
+                    }
+                    .setPositiveButton("Play Again") { dialog, which ->
+                        countDownTimer!!.cancel()
+                        val intent = Intent(applicationContext, Main2Activity::class.java)
+                        startActivity(intent)
+                    }
+                    .create()
+                dialog.show()
+
+                //setting the color of dialog buttons
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(blue)
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(blue)
+        }
+
             var cursor = pracDB.rawQuery("Select * from Jwords where number = $num" +
                     "", null)   //getting all column values for a particular S_No
             val no_Index = cursor.getColumnIndex("number")
@@ -305,6 +364,10 @@ class Main2Activity : AppCompatActivity() {
        // super.onBackPressed()- delete this method to prevent going back using back button
     }
 
+    fun setTimer(){
+
+    }
+
 
    /*fun shuffle(s : String):  String{
         var shuffle = s.toCharArray()
@@ -313,6 +376,7 @@ class Main2Activity : AppCompatActivity() {
         //for (i in shuffle){}
         val str = String(shuffle)
         return str
+
     }*/
 
 }
